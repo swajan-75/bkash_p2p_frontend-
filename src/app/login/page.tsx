@@ -19,9 +19,14 @@ export default function LoginPage() {
 
     try {
       const res = await api.post("/user/login", form); // use base URL
-      alert(res.data.message || "Login successful!");
+      if(res.data.status === 400){
+            alert(res.data.message);
+        }
+        alert(res.data.message || "Login successful!");
         localStorage.setItem("userEmail", form.email);
-      window.location.href = "/dashboard";
+        window.location.href = "/dashboard";
+
+        
       
     } catch (err: any) {
       if (err.response) {
