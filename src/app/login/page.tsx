@@ -19,19 +19,19 @@ export default function LoginPage() {
 
     try {
       const res = await api.post("/user/login", form); // use base URL
-      if(res.data.status === 400){
-            alert(res.data.message);
-        }
-        alert(res.data.message || "Login successful!");
+        alert("Login successful!");
+        document.cookie = `token=${res.data.token}; path=/; max-age=86400; samesite=lax`;
         localStorage.setItem("userEmail", form.email);
-        window.location.href = "/dashboard";
+        localStorage.setItem("token", res.data.token);
+        console.log(res.data);
+        window.location.href = "/transactions";
 
         
       
     } catch (err: any) {
       if (err.response) {
-        // Backend returned an error
         setErrors(err.response.data || {});
+        alert(err.response.data.message || "Something went wrong!");
       } else {
         console.error(err);
         alert("Network error or server is not reachable");

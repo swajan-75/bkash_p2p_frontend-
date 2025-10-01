@@ -6,25 +6,27 @@ import { Menu, X } from "lucide-react";
 import api from "../lib/axios";
 
 const links = [
-  { name: "Dashboard", href: "/dashboard" },
+  { name: "Dashboard", href: "/working" },
   { name: "Main Balance", href: "/cashout" },
-    { name : "Transactions", href : "/transactions"},
+  { name: "Transactions", href: "/transactions" },
   { name: "About", href: "/about" },
-  
 ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
-  const [mounted, setMounted] = useState(false); // track client-side
+  const [mounted, setMounted] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    setMounted(true); // mark as mounted
+    setMounted(true);
+    const email = localStorage.getItem("userEmail");
+    if (email) setLoggedIn(true);
   }, []);
 
   const fetchBalance = async () => {
-    if (!mounted) return; // only run on client
+    if (!mounted) return;
     if (balance !== null) {
       setBalance(null);
       if (timerId) clearTimeout(timerId);
@@ -46,7 +48,17 @@ export default function Navbar() {
     }
   };
 
-  if (!mounted) return null; // prevent SSR mismatch
+  const handleLogout = () => {
+    document.cookie =
+    document.cookie =
+    document.cookie = "token=; path=/; max-age=0; samesite=lax";
+    localStorage.clear();
+    setLoggedIn(false);
+    setMenuOpen(false);
+    window.location.href = "/login";
+  };
+
+  if (!mounted) return null;
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-white text-black border-b border-gray-200 z-50">
@@ -76,9 +88,21 @@ export default function Navbar() {
               </Link>
             )
           )}
-          <button className="ml-4 rounded-lg bg-red-600 px-4 py-1 text-white font-semibold hover:bg-red-700">
-            Logout
-          </button>
+          {loggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="ml-4 rounded-lg bg-red-600 px-4 py-1 text-white font-semibold hover:bg-red-700"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="ml-4 rounded-lg bg-green-600 px-4 py-1 text-white font-semibold hover:bg-green-700"
+            >
+              Login
+            </Link>
+          )}
         </div>
 
         {/* Mobile Hamburger */}
@@ -114,12 +138,22 @@ export default function Navbar() {
               </Link>
             )
           )}
-          <button
-            className="w-full rounded-lg bg-red-600 px-4 py-2 text-white font-semibold hover:bg-red-700"
-            onClick={() => setMenuOpen(false)}
-          >
-            Logout
-          </button>
+          {loggedIn ? (
+            <button
+              className="w-full rounded-lg bg-red-600 px-4 py-2 text-white font-semibold hover:bg-red-700"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="block w-full rounded-lg bg-green-600 px-4 py-2 text-white font-semibold text-center hover:bg-green-700"
+              onClick={() => setMenuOpen(false)}
+            >
+              Login
+            </Link>
+          )}
         </div>
       )}
     </nav>
