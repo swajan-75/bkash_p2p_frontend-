@@ -18,13 +18,12 @@ export default function LoginPage() {
     setErrors({});
 
     try {
-      const res = await api.post("/user/login", form); // use base URL
+      const res = await api.post("/user/login", form,{withCredentials : true}); // use base URL
         alert("Login successful!");
-        document.cookie = `token=${res.data.token}; path=/; max-age=86400; samesite=lax`;
         localStorage.setItem("userEmail", form.email);
-        localStorage.setItem("token", res.data.token);
         console.log(res.data);
         window.location.href = "/transactions";
+
 
         
       

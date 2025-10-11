@@ -29,15 +29,11 @@ export default function TransactionPage() {
 
   const fetchTransactions = async () => {
     try {
-        if(document.cookie.includes("token") === false){
-      window.location.href = "/login";
-      return;
-    }
       const res = await api.get("/user/alltransactions/" + localStorage.getItem("userEmail"));
       setTransactions(res.data.transactions || []);
       setFilteredTxns(res.data.transactions || []);
-    } catch (err) {
-      console.error(err);
+    } catch (err : any) {
+      //console.error(err);
     }
   };
 
@@ -84,21 +80,18 @@ export default function TransactionPage() {
       setForm({ user_id: "", trxid: "", mobile: "", amount: "", type: "credit" });
       fetchTransactions();
     } catch (err: any) {
-      console.error(err);
+     // console.error(err);
       setErrors({ general: err.response?.data?.message || "Something went wrong!" });
       
     }
   };
 
   return (
-    <ProtectedRoute>
-
-    
+    <>
+    <ProtectedRoute onAuth={fetchTransactions} >
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <div className="flex flex-col md:flex-row justify-center items-start py-10 gap-10 px-4 md:px-10">
-
-        {/* Left Side: Transaction Form */}
         <div className="w-full md:w-1/3 bg-white p-8 rounded-2xl shadow-lg">
           <h2 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-blue-500 to-blue-700 text-white py-2 rounded-xl">
             Make a Transaction
@@ -218,5 +211,6 @@ export default function TransactionPage() {
       </div>
     </div>
     </ProtectedRoute>
+    </>
   );
 }

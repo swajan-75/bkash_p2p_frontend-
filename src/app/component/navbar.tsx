@@ -48,14 +48,17 @@ export default function Navbar() {
     }
   };
 
-  const handleLogout = () => {
-    document.cookie =
-    document.cookie =
-    document.cookie = "token=; path=/; max-age=0; samesite=lax";
-    localStorage.clear();
+  const handleLogout = async () => {
+    try {
+    await api.post("/user/logout", { withCredentials: true }); // wait for server to clear cookie
+    localStorage.clear(); // clear client storage
     setLoggedIn(false);
     setMenuOpen(false);
-    window.location.href = "/login";
+    window.location.href = "/login"; // redirect
+  } catch (err) {
+    console.error("Logout failed:", err);
+    alert("Error logging out. Please try again.");
+  }
   };
 
   if (!mounted) return null;
